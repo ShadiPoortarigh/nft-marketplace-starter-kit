@@ -2,17 +2,15 @@
 
 pragma solidity ^0.8.4;
 
+import './ERC721Connector.sol';
 
 
-contract Greenbox {
-    string private name;
-    string private symbol;
-
-
-    constructor(){
-        name = 'boxForGreen';
-        symbol = 'XDF76';
+contract Greenbox is ERC721Connector {
+    
+    constructor() ERC721Connector('Greenbox', 'Gbox'){
+        
     }
 
     
 }
+
