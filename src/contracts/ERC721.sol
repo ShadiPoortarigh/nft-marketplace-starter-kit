@@ -12,12 +12,15 @@ contract ERC721{
 
     );
 
-    mapping(uint256 => address) private _tokenOwner;
-    mapping(address => uint) private _OwnedTokenCount;
+    // who(address) is the owner of this asset
+    mapping(uint256 => address) private _tokenOwner; //  _tokenOwner = { tokenId : 'address-of-owner' }
+    //how many tokens each owner has
+    mapping(address => uint) private _OwnedTokenCount; // _OwnedTokenCount = { 'owner' : balance-of-owner }
+    
     
     function balanceOf(address _owner) public view returns (uint256){
 
-        require(_owner != address(0), 'Owner query for non-existing token'); //(condition) If owner address was entered mistakenly, print this error message
+        require(_owner != address(0), 'Owner query for non-existing token'); //(condition) If the owner address was entered mistakenly, print this error message
         return _OwnedTokenCount[_owner];
 
     }
@@ -34,7 +37,7 @@ contract ERC721{
     }
     
     
-    function _mint(address to, uint256 tokenId ) internal {
+    function _mint(address to, uint256 tokenId ) internal virtual {
 
         require(to != address(0), "This address is invalid");
         require(!_exists(tokenId), "This token already minted");
@@ -42,7 +45,22 @@ contract ERC721{
         _tokenOwner[tokenId] = to;
         _OwnedTokenCount[to] += 1;
 
-        emit Transfer(address(0), to, tokenId);
+        emit Transfer(address(0) , to, tokenId);  // address(0) is equivalent to msg.sender
     }
 
 }
+
+
+
+
+/* 
+address(0):
+
+Within an Ethereum transaction, the zero-account is just a special
+case used to indicate that a new contract is being deployed. It is 
+literally '0x0' set to the to field in the raw transaction.
+
+If to is set to something other than '0x0', this request will result
+in transferring ether to the address. The address can either be a 
+contract or an external account.
+ */
