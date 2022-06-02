@@ -60,7 +60,7 @@ Within an Ethereum transaction, the zero-account is just a special
 case used to indicate that a new contract is being deployed. It is 
 literally '0x0' set to the to field in the raw transaction.
 
-If to is set to something other than '0x0', this request will result
+If "to" is set to something other than '0x0', this request will result
 in transferring ether to the address. The address can either be a 
 contract or an external account.
  */

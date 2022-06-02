@@ -9,8 +9,8 @@ contract ERC721Enumerable is ERC721 {
     uint256[] private _allTokens; // It stores all of my tokens
 
     mapping(uint => uint256) private _allTokensIndex; // it outputs indexes of all tokens
-
-    mapping(address => uint256) private _ownedTokens; // IF the token is mine
+ 
+    mapping(address => uint256[]) private _ownedTokens; // IF the token is mine
 
     mapping(uint256 => uint256) private _ownedTokensIndex; // Index of my tokens
 
@@ -25,7 +25,7 @@ contract ERC721Enumerable is ERC721 {
     }
 
 
-    function _addTokensToTotalSupply(uint256 tokenId) private {
+    function _addTokensToTotalSupply(uint256 tokenId) private { 
         _allTokensIndex[tokenId] = _allTokens.length;
         _allTokens.push(tokenId);
 
@@ -53,7 +53,7 @@ contract ERC721Enumerable is ERC721 {
     function totalSupply() public view returns(uint256){
         return _allTokens.length;
     }
-     
+      
 
 
 
