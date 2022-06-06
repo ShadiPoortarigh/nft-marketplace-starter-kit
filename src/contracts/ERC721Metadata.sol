@@ -3,10 +3,10 @@
 pragma solidity ^0.8.4;
 
 
+import './interfaces/IERC721Metadata.sol';
 
 
-
-contract ERC721Metadata {
+contract ERC721Metadata is IERC721Metadata {
 
     string private _name;
     string private _symbol;
