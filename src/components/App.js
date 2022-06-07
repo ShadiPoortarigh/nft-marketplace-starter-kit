@@ -7,6 +7,81 @@ import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBCardImage, MDBBtn }
 import './App.css';
 
 class App extends Component{
+
+    async componentDidMount(){
+        await this.loadWeb3();
+        await this.loadBlockchainData();
+
+    }
+    async loadWeb3(){
+        const provider = await detectEthereumProvider();
+
+        if(provider){ //Authentication phase
+            console.log('Ethereum Wallet Connected');
+            window.web3 = new Web3(provider);
+        }
+        else{
+            console.log('no ethereum wallet detected');
+
+        }
+    }
+
+    async loadBlockchainData(){
+        const web3 = window.web3
+        const accounts = await web3.eth.getAccounts()
+        this.setState({account:accounts[0]})
+
+        const networkId = await web3.eth.net.getId()
+        const networkData = Greenbox.networks[networkId]
+
+        if(networkData){
+            const abi = Greenbox.abi;
+            const address = networkdata.address;
+            const contract = new web3.eth.Contract(abi, address);
+            this.setState({contract})
+
+            const totalSupply = await contract.methods.totalSupply().call();
+        this.setState({totalSupply})
+        
+        for (let i=1; i<=totalSupply; i++){
+            const GreenBox = await contract.GreenBox(i-1).call()
+
+            this.setState({GreenBox:[...this.state.GreenBox, GreenBox]});
+
+        }
+
+
+        
+        }
+        else{
+            window.alert('Smart contract not deployed.')
+        }
+
+    }
+    
+
+    mint = (Greenbox)=>{
+        this.state.contract.methods.mint(Greenbox).send({from:this.state.account}).once('recepit', (recepit)=>{
+            this.setState({
+                Greenbox:[...this.state.GreenBox, Greenbox]
+            })
+        })
+    }
+    
+
+
+    constructor(props){
+        super(props);
+        this.state = {
+            account:'',
+            contract:null,
+            totalSupply:0,
+            Greenbox:[]
+        }
+
+    }
+
+
     render(){
         return(
             <div className = "container-filled">
@@ -29,14 +104,50 @@ class App extends Component{
                             <div className="content mr-auto" style={{opecity:'0.8'}}>
                                 <h1 style={{color:'black'}}>GreenBox NFT MarketPlace</h1>
 
-                                <form onSubmit="">
-                                    <input type="text" placeholder="Add file location" className="form-control mb-1" ref={(input)=>this.Greenbox=input>}>
+                                <form 
+                                onSubmit={(event)=>{
+                                    event.preventDefault();
+                                    const GreenBox = this.Greenbox.value;
+                                    this.mint(Greenbox);
+                                    }}
+                                    >
+                                    <input 
+                                    type="text" 
+                                    placeholder="Add file location" 
+                                    className="form-control mb-1" 
+                                    ref={(input)=>(this.Greenbox=input)}
+                                    />
 
-                                    <input type="submit" style={{margin:'6'px}}
+                                    <input type="submit" 
+                                    style={{margin:'6px'}} 
+                                    className='btn btn-primary btn-back' 
+                                    value='MINT'
+                                    />
                                 </form>
 
                             </div>
                         </main>
+                    </div>
+
+                    <hr/><hr/>
+                    <div className="row textCenter">
+                        {this.state.GreenBox.map((GreenBox, key) => {
+                            return(
+                                <div>
+                                    <div>
+                                        <MDBCard className="token img" style={{maxWidth:'22rem'}}>
+                                            <MDBCardImage src={GreenBox} position='top' height='250rem' style={{marginRight:'4px'}}/>
+                                            <MDBCardBody>
+                                                <MDBCardTitle>GreenBox</MDBCardTitle>
+                                                <MDBCardText>The GreenBox NFT</MDBCardText>
+                                                <MDBBtn href="{GreenBox}">Download</MDBBtn>
+                                            </MDBCardBody>
+                                        </MDBCard>
+                                    </div>
+                                </div>
+                            )
+                            
+                        })}
                     </div>
                 </div>
             </div>
