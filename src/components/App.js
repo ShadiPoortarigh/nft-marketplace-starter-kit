@@ -8,11 +8,14 @@ import './App.css';
 
 class App extends Component{
 
+    // It allows us to execute React code when the component is already placed in the DOM
     async componentDidMount(){
         await this.loadWeb3();
         await this.loadBlockchainData();
 
     }
+
+    // This function detects the presence of an ethereum provider in the web browser 
     async loadWeb3(){
         const provider = await detectEthereumProvider();
 
@@ -26,18 +29,19 @@ class App extends Component{
         }
     }
 
+    // Then you must create a function that loads data from blockchain
     async loadBlockchainData(){
-        const web3 = window.web3
-        const accounts = await web3.eth.getAccounts()
+        const web3 = window.web3 //open a console
+        const accounts = await web3.eth.getAccounts() // get the account
         this.setState({account:accounts[0]})
 
-        const networkId = await web3.eth.net.getId()
-        const networkData = Greenbox.networks[networkId]
+        const networkId = await web3.eth.net.getId() // get the id
+        const networkData = Greenbox.networks[networkId] // using the id, get the data from Greenbox.json
 
         if(networkData){
-            const abi = Greenbox.abi;
-            const address = networkdata.address;
-            const contract = new web3.eth.Contract(abi, address);
+            const abi = Greenbox.abi; // get the abi from Greenbox.json 
+            const address = networkdata.address; // get the address from thr data inside Greenbox.json
+            const contract = new web3.eth.Contract(abi, address); // create a contract using the data and its address
             this.setState({contract})
 
             const totalSupply = await contract.methods.totalSupply().call();
@@ -158,3 +162,12 @@ class App extends Component{
 export default App
 
 
+
+
+
+
+//references for more study:
+
+//https://www.dappuniversity.com/articles/how-to-build-a-blockchain-app#whatIsABlockchain
+
+//https://docs.metamask.io/guide/ethereum-provider.html#chain-ids
